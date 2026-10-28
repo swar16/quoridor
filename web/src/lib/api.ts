@@ -13,6 +13,14 @@ export interface Profile {
 const OFFLINE = "Can't reach the server. Check your connection.";
 
 async function call<T>(name: string, options: { method?: "GET" | "POST"; body?: unknown } = {}): Promise<T> {
+  const region = import.meta.env.VITE_SUPABASE_FUNCTION_REGION as string | undefined;
+  if (region && region !== "any") {
+    const [path, query] = name.split("?", 2);
+    const params = new URLSearchParams(query);
+    // The SDK's routing parameter avoids adding an x-region header to existing CORS policies.
+    params.set("forceFunctionRegion", region);
+    name = `${path}?${params}`;
+  }
   const { data, error } = await client().functions.invoke(name, { method: options.method ?? "POST", body: options.body as never });
   if (error) {
     if (error instanceof FunctionsHttpError) {

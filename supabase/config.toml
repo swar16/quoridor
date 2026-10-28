@@ -30,6 +30,21 @@ enable_anonymous_sign_ins = true
 [auth.email]
 enable_signup = false  # anonymous-only
 
+[functions.create-room]
+verify_jwt = true
+
+[functions.join-room]
+verify_jwt = true
+
+[functions.get-room]
+verify_jwt = true
+
+[functions.submit-action]
+verify_jwt = true
+
+[functions.claim-timeout]
+verify_jwt = true
+
 # Called by a scheduler with a shared secret rather than a user JWT
 [functions.cleanup-rooms]
 verify_jwt = false

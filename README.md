@@ -180,17 +180,27 @@ still runs from its existing `updated_at`. This change does not deploy or alter 
 ### Deploying this fork
 
 Import `swar16/quoridor` into Vercel with **Root Directory** set to `web` and the **Vite** preset.
-Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for Production and Preview to use the existing Supabase project.
+Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for Production and Preview to the intended Supabase project.
+Set `VITE_SUPABASE_FUNCTION_REGION` to the database region (`ap-south-1` for Mumbai). This keeps authentication and
+database calls inside the database region instead of repeatedly crossing regions from the user's nearest function.
+Omit the setting or use `any` to restore automatic routing. Regional routing uses the SDK's `forceFunctionRegion` query
+parameter, preserving the deployed functions' existing CORS policies.
 Add the deployed URL to Supabase Auth's allowed redirect URLs. The build settings in `web/vercel.json` install the
 lockfile, run the web tests, type-check, and build. Git pushes to `main` deploy production; other branches create previews.
 In Vercel's Deployment Checks, require the four CI jobs before releasing production builds.
 
 Enable **Web Analytics** in the Vercel project to collect website visits. Analytics can be filtered by production/preview
-and hostname. Existing accounts, Google identities, player counts and game stats remain in Supabase; they are separate
-from website visitor analytics. A new domain has a separate browser login session, so guests should link Google on the
-original site before switching if they want to keep that guest account.
+and hostname. Accounts, Google identities, player counts and game stats live in Supabase; they are separate
+from website visitor analytics. Moving to another Supabase project requires a data migration and Google OAuth setup.
+Existing sessions do not transfer. Guests should link Google on the original site before switching to keep access
+to that guest account after its profile and identity have been migrated.
 
-The **Deploy Supabase** GitHub Actions workflow is started manually because this backend is shared with other clients.
-It runs CI first, applies migrations, then deploys functions. Configure repository secrets `SUPABASE_ACCESS_TOKEN` and
+For automatic backend deployment, connect `swar16/quoridor` under **Supabase → Project Settings → Integrations**,
+set working directory to `.`, production branch to `main`, and enable **Deploy to production**.
+Preview branching is optional. The integration applies migrations and deploys the functions declared in
+`supabase/config.toml`; configure production Auth URLs and providers separately in the dashboard.
+
+The **Deploy Supabase** GitHub Actions workflow is a manual alternative. It runs CI first, applies migrations,
+then deploys functions. Configure repository secrets `SUPABASE_ACCESS_TOKEN` and
 `SUPABASE_DB_PASSWORD`, and the repository variable `SUPABASE_PROJECT_REF`, before running it. Never put privileged keys
 in `VITE_` variables. Deploy backend changes before releasing clients that depend on them.
