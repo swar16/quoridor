@@ -176,3 +176,21 @@ updated web/Android clients: successful action responses now include the confirm
 Rooms, quick matches and rematches all initialize independent 120,000 ms balances. Existing matches receive initial balances
 at rollout; earlier thinking time cannot be reconstructed because per-move timestamps were not stored. The current turn
 still runs from its existing `updated_at`. This change does not deploy or alter the live backend automatically.
+
+### Deploying this fork
+
+Import `swar16/quoridor` into Vercel with **Root Directory** set to `web` and the **Vite** preset.
+Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for Production and Preview to use the existing Supabase project.
+Add the deployed URL to Supabase Auth's allowed redirect URLs. The build settings in `web/vercel.json` install the
+lockfile, run the web tests, type-check, and build. Git pushes to `main` deploy production; other branches create previews.
+In Vercel's Deployment Checks, require the four CI jobs before releasing production builds.
+
+Enable **Web Analytics** in the Vercel project to collect website visits. Analytics can be filtered by production/preview
+and hostname. Existing accounts, Google identities, player counts and game stats remain in Supabase; they are separate
+from website visitor analytics. A new domain has a separate browser login session, so guests should link Google on the
+original site before switching if they want to keep that guest account.
+
+The **Deploy Supabase** GitHub Actions workflow is started manually because this backend is shared with other clients.
+It runs CI first, applies migrations, then deploys functions. Configure repository secrets `SUPABASE_ACCESS_TOKEN` and
+`SUPABASE_DB_PASSWORD`, and the repository variable `SUPABASE_PROJECT_REF`, before running it. Never put privileged keys
+in `VITE_` variables. Deploy backend changes before releasing clients that depend on them.

@@ -88,7 +88,7 @@ export function Home(p: Props) {
         )}
 
         <footer>
-          <a href="/privacy">Privacy</a> · <a href="https://github.com/shivangiS04/quoridor">Source</a>
+          <a href="/privacy">Privacy</a> · <a href="https://github.com/swar16/quoridor">Source</a>
         </footer>
       </div>
     </div>
