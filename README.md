@@ -179,6 +179,9 @@ still runs from its existing `updated_at`. This change does not deploy or alter 
 
 ### Deploying this fork
 
+Production website: [quoridor-swar16.vercel.app](https://quoridor-swar16.vercel.app).
+The fork's Supabase project is hosted in Mumbai (`ap-south-1`).
+
 Import `swar16/quoridor` into Vercel with **Root Directory** set to `web` and the **Vite** preset.
 Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for Production and Preview to the intended Supabase project.
 Set `VITE_SUPABASE_FUNCTION_REGION` to the database region (`ap-south-1` for Mumbai). This keeps authentication and
@@ -194,6 +197,8 @@ and hostname. Accounts, Google identities, player counts and game stats live in 
 from website visitor analytics. Moving to another Supabase project requires a data migration and Google OAuth setup.
 Existing sessions do not transfer. Guests should link Google on the original site before switching to keep access
 to that guest account after its profile and identity have been migrated.
+After a project migration, new accounts and stats on the two websites evolve independently.
+Visitor history belongs to the original analytics project and is not part of the Supabase migration.
 
 For automatic backend deployment, connect `swar16/quoridor` under **Supabase → Project Settings → Integrations**,
 set working directory to `.`, production branch to `main`, and enable **Deploy to production**.
